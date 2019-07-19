@@ -74,6 +74,8 @@ public class Main {
         Set<List<T>> combinations = new HashSet<List<T>>();
         Set<List<T>> newCombinations;
 
+
+
         int index = 0;
 
         // extract each of the integers in the first list
