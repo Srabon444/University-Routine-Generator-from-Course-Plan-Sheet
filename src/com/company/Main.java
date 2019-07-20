@@ -106,7 +106,7 @@ public class Main {
     }
 
     //Generate Combinations
-    private static void generateCombinations(Treenode[] treenodes){
+    private static void generateCombinations(Treenode[] treenodes, int totalDayCount){
         List<List<String>> AllCourseTimelists = new ArrayList<List<String>>();
         for(int i = 0; i < treenodes.length; i++){
             //System.out.println("Size "+treenodes[i].times.size());
@@ -114,9 +114,19 @@ public class Main {
         }
 
         Set<List<String>> combs = getCombinations(AllCourseTimelists);
-        System.out.println("Available Routine "+combs.size());
+        //System.out.println("Available Routine "+combs.size());
+        int count = 1;
         for(List<String> list : combs) {
-            System.out.println(list.toString());
+            //System.out.println(list.toString());
+            String[] combination = list.toArray(new String[list.size()]);
+            Set<Character> dayCounter = new HashSet<>();
+            for(int i = 0; i < combination.length; i++){
+                dayCounter.add(combination[i].charAt(0));
+                dayCounter.add(combination[i].charAt(1));
+            }
+            if(dayCounter.size() == totalDayCount){
+                System.out.println(count++ + ". " +list.toString());
+            }
         }
 
 
@@ -177,6 +187,8 @@ public class Main {
             treenodes[i] = new Treenode(scanner.next());
             treenodes[i].times = new ArrayList<String>();
         }
+        System.out.println("How many days you want to take your classes?");
+        int totalDayCount = scanner.nextInt();
 
 
         String[] uniqueNodes = new String[1500];
@@ -211,7 +223,7 @@ public class Main {
             }
         }
 
-        generateCombinations(treenodes);
+        generateCombinations(treenodes, totalDayCount);
 
         //System.out.println(treenodes[2].name + "\n" + treenodes[2].times);
 
