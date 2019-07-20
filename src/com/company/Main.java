@@ -128,6 +128,9 @@ public class Main {
                 System.out.println(count++ + ". " +list.toString());
             }
         }
+        if(count == 1){
+            System.out.println("No routine available for "+totalDayCount+" days.");
+        }
 
 
 
