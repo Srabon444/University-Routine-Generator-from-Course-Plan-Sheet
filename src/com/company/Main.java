@@ -226,9 +226,9 @@ public class Main {
             }
         }
 
-        generateCombinations(treenodes, totalDayCount);
+        //generateCombinations(treenodes, totalDayCount);
 
-        //System.out.println(treenodes[2].name + "\n" + treenodes[2].times);
+        System.out.println(treenodes[0].name + "\n" + treenodes[0].times);
 
 
 
