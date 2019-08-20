@@ -6,10 +6,13 @@ import jxl.Sheet;
 import jxl.Workbook;
 
 import java.io.File;
+import java.time.LocalTime;
 import java.util.*;
 
 public class Main {
 
+    private static int theoryCourseCount;
+    private static int labCourseCount;
     private static Treenode root;
     private static class Treenode {
 
@@ -27,6 +30,10 @@ public class Main {
 
     public void setInputFile(String inputFile){
         this.inputFile = inputFile;
+    }
+
+    public static boolean isBetween(LocalTime candidate, LocalTime start, LocalTime end) {
+        return !candidate.isBefore(start) && !candidate.isAfter(end);  // Inclusive.
     }
 
     public void read(){
@@ -106,16 +113,83 @@ public class Main {
     }
 
     //Generate Combinations
-    private static void generateCombinations(Treenode[] treenodes, int totalDayCount){
+    private static void generateCombinations(Treenode[] treenodes, int totalDayCount) {
         List<List<String>> AllCourseTimelists = new ArrayList<List<String>>();
-        for(int i = 0; i < treenodes.length; i++){
+        for (int i = 0; i < theoryCourseCount; i++) {
             //System.out.println("Size "+treenodes[i].times.size());
             AllCourseTimelists.add(treenodes[i].times);
         }
 
         Set<List<String>> combs = getCombinations(AllCourseTimelists);
+        /*combs contains only theory combination*/
         //System.out.println("Available Routine "+combs.size());
         int count = 1;
+        for (List<String> c : combs) {
+            for (int j = theoryCourseCount; j < theoryCourseCount + labCourseCount; j++) {
+                List<String> testTimes = new ArrayList<String>();
+                testTimes = treenodes[j].times;
+
+                for (String labTime : testTimes) {
+                    String[] combination = c.toArray(new String[c.size()]);
+                    int ok = 0;
+
+
+                    for (int i = 0; i < combination.length; i++) {
+                        String dc = "";
+                        boolean dayConf = false;
+                        boolean timeConf = false;
+                        dc += combination[i].charAt(0);
+                        dc += combination[i].charAt(1);
+
+                        String labDay = String.valueOf(labTime.charAt(0));
+
+                        if (dc.contains(labDay)) {
+                            dayConf = true;
+                            String newLabTime = labTime.substring(2);
+                            String courseTime = combination[i].substring(3);
+
+                            //System.out.println(newLabTime + " " +courseTime);
+                            String[] timeParserLab = newLabTime.split(" - ");
+                            String[] timeParserCourse = courseTime.split(" - ");
+
+                            LocalTime time = LocalTime.parse(timeParserLab[0].substring(0, 5));
+                            if (isBetween(time, LocalTime.parse(timeParserCourse[0].substring(0, 5)), LocalTime.parse(timeParserCourse[1].substring(0, 5)))) {
+                                //timeConf = true;
+                                //System.out.println(labTime + " " + combination[i] + "day and time");
+                            } else {
+                                ok++;
+                            }
+
+                        } else {
+                            ok++;
+                        }
+                    }
+
+                    if (ok == theoryCourseCount) {
+
+                            //System.out.println(list.toString());
+                        String[] combination1 = c.toArray(new String[c.size()]);
+                        Set<Character> dayCounter = new HashSet<>();
+                        for(int i = 0; i < combination1.length; i++){
+                            dayCounter.add(combination1[i].charAt(0));
+                            dayCounter.add(combination1[i].charAt(1));
+                        }
+                        dayCounter.add(labTime.charAt(0));
+                        if(dayCounter.size() == totalDayCount){
+                            System.out.println(count++ + ". " +c.toString()+ " " +labTime);
+                        }
+
+                        /*if(count == 1){
+                            //System.out.println("No routine available for "+totalDayCount+" days.");
+                        }*/
+                    }
+                }
+            }
+        }
+
+
+
+        /*int count = 1;
         for(List<String> list : combs) {
             //System.out.println(list.toString());
             String[] combination = list.toArray(new String[list.size()]);
@@ -130,46 +204,9 @@ public class Main {
         }
         if(count == 1){
             System.out.println("No routine available for "+totalDayCount+" days.");
-        }
-
-
-
-
-       /* ArrayList<String[]> combinations = new ArrayList<String[]>();
-
-        String[] firstCourseTimes = new String[treenodes[0].times.size()];
-        firstCourseTimes = treenodes[0].times.toArray(firstCourseTimes);
-
-
-        for (String firstTime :
-                firstCourseTimes) {
-
-            for(int i = 1; i < treenodes.length; i++){
-                String[] nextCourseTimes = new String[treenodes[i].times.size()];
-                nextCourseTimes = treenodes[i].times.toArray(nextCourseTimes);
-
-                for(String nextTime : nextCourseTimes){
-
-                }
-
-                *//*if(!treenodes[i].name.equals(treenode.name)){
-                    String[] times2 = new String[treenodes[i].times.size()];
-                    times2 = treenodes[i].times.toArray(times2);
-                    for (String time2 :
-                            times2){
-                        if(!time1.equals(time2)){
-                            combinations.add(treenode.name +" "+ time1 + " & "+treenodes[i].name
-                            +" "+time2);
-                        }
-                    }
-                }*//*
-            }
-            combinations.add(combinationStringArray);
         }*/
 
-        /*for(int i = 0; i < combinations.size(); i++){
-            System.out.println(combinations.get(i));
-        }*/
+
 
     }
 
@@ -180,13 +217,24 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("How many courses you have taken?");
-        int courseCount = scanner.nextInt();
+        System.out.println("How many theory courses you have taken?");
+        theoryCourseCount = scanner.nextInt();
+        System.out.println("How many lab courses you have taken?");
+        labCourseCount = scanner.nextInt();
 
-        System.out.println("Enter the course code for your taken courses: ");
+        System.out.println("Enter the Theory course code for your taken courses: ");
         //Set nodes based on taken courses
-        Treenode[] treenodes = new Treenode[courseCount];
-        for(int i = 0; i < courseCount; i++){
+        Treenode[] treenodes = new Treenode[theoryCourseCount+labCourseCount];
+        for(int i = 0; i < theoryCourseCount; i++){
+            treenodes[i] = new Treenode(scanner.next());
+            treenodes[i].times = new ArrayList<String>();
+        }
+       // System.out.println("How many lab courses you have taken?");
+       // int labCourseCount = scanner.nextInt();
+
+        System.out.println("Enter the Lab course code for your taken courses: ");
+        //Set nodes based on taken courses
+        for(int i = theoryCourseCount; i < labCourseCount+theoryCourseCount; i++){
             treenodes[i] = new Treenode(scanner.next());
             treenodes[i].times = new ArrayList<String>();
         }
@@ -226,9 +274,9 @@ public class Main {
             }
         }
 
-        //generateCombinations(treenodes, totalDayCount);
+        generateCombinations(treenodes, totalDayCount);
 
-        System.out.println(treenodes[0].name + "\n" + treenodes[0].times);
+        //System.out.println(treenodes[0].name + "\n" + treenodes[0].times);
 
 
 

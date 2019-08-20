@@ -36,7 +36,7 @@ public class CompareTime {
         testTimes.add("R 08:00 AM - 11:10 AM");
 
 
-        for(String labTime: testTimes){
+        /*for(String labTime: testTimes){
             String[] combination = combs.toArray(new String[combs.size()]);
             int ok = 0;
 
@@ -75,7 +75,7 @@ public class CompareTime {
             if(ok == 3){
                 System.out.println(combs + labTime);
             }
-        }
+        }*/
         //System.out.println(combs);
     }
 }
