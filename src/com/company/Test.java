@@ -9,11 +9,12 @@ import java.io.File;
 import java.time.LocalTime;
 import java.util.*;
 
-public class Main {
+public class Test {
 
     private static int theoryCourseCount;
     private static int labCourseCount;
     private static Treenode root;
+
     private static class Treenode {
 
         private List<String> times;
@@ -136,24 +137,15 @@ public class Main {
             }
         }
 
-
+        List<Set<Set<String>>> output = new ArrayList<Set<Set<String>>>();
         int count = 1;
-        if(labCourseCount == 0){
-            for (Set<String> c : finalCombs) {
-                System.out.printf("%-5s |",count++);
-                for(String o : c){
-                    System.out.format("%-20s |", o);
-                }
-                System.out.println();
-            }
-            return;
-        }
-        //System.out.println("jk");
         for (Set<String> c : finalCombs) {
+            Set<String> s = new HashSet<String>();
             for (int j = theoryCourseCount; j < theoryCourseCount + labCourseCount; j++) {
                 List<String> testTimes = new ArrayList<String>();
                 testTimes = treenodes[j].times;
-
+                int flag = 0;
+                //Set<String> s = c;
                 for (String labTime : testTimes) {
                     String[] combination = c.toArray(new String[c.size()]);
                     int ok = 0;
@@ -191,7 +183,9 @@ public class Main {
 
                     if (ok == theoryCourseCount) {
 
-                            //System.out.println(list.toString());
+
+
+                        //System.out.println(list.toString());
                         String[] combination1 = c.toArray(new String[c.size()]);
                         Set<Character> dayCounter = new HashSet<>();
                         for(int i = 0; i < combination1.length; i++){
@@ -200,13 +194,13 @@ public class Main {
                         }
                         dayCounter.add(labTime.charAt(0));
                         if(dayCounter.size() == totalDayCount){
-                            System.out.printf("%-5s |",count++);
+                            /*System.out.printf("%-5s |",count++);
                             for(String course:c){
                                 System.out.format("%-20s |", course);
                             }
-                            System.out.printf("%-20s |",labTime);
+                            System.out.printf("%-20s |",labTime);*/
                         }
-                        System.out.println();
+                        //System.out.println();
 
 
                     }
@@ -215,39 +209,27 @@ public class Main {
                     System.out.println("No routine available for "+totalDayCount+" days.");
                 }*/
             }
+            //System.out.println(s);
+            /*if(s.size() == theoryCourseCount+labCourseCount){
+                output.add(s);
+            }*/
         }
-        if(count == 1){
-            System.out.println("No routine available for "+totalDayCount+" days.");
-        }
-
-
-        /*int count = 1;
-        for(List<String> list : combs) {
-            //System.out.println(list.toString());
-            String[] combination = list.toArray(new String[list.size()]);
-            Set<Character> dayCounter = new HashSet<>();
-            for(int i = 0; i < combination.length; i++){
-                dayCounter.add(combination[i].charAt(0));
-                dayCounter.add(combination[i].charAt(1));
-            }
-            if(dayCounter.size() == totalDayCount){
-                System.out.println(count++ + ". " +list.toString());
-            }
-        }
-        if(count == 1){
+        /*if(count == 1){
             System.out.println("No routine available for "+totalDayCount+" days.");
         }*/
 
 
 
+        System.out.println(output);
+
+
     }
 
     public static void main(String[] args) throws Exception {
-        Main test = new Main();
+        Test test = new Test();
         test.setInputFile("preadvise.xls");
         test.read();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your Student ID-");
         String id = scanner.nextLine();
         List<String> theory = new ArrayList<String>();
         List<String> lab = new ArrayList<String>();
@@ -300,8 +282,8 @@ public class Main {
             }
             treenodes[i].times = new ArrayList<String>();
         }
-       // System.out.println("How many lab courses you have taken?");
-       // int labCourseCount = scanner.nextInt();
+        // System.out.println("How many lab courses you have taken?");
+        // int labCourseCount = scanner.nextInt();
 
         //System.out.println("Enter the Lab course code for your taken courses: ");
         //Set nodes based on taken courses
