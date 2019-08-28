@@ -293,7 +293,7 @@ public class Main {
             collect.add(s);
         }
         for(List<String> f :collect){
-            System.out.printf("%5s===",count++);
+            System.out.printf("%5s|",count++);
             for(String s:f){
                 System.out.printf("%20s===",s);
             }
@@ -309,6 +309,7 @@ public class Main {
         main.setInputFile("preadvise.xls");
         main.read();
         Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter Your ID...");
         String id = scanner.nextLine();
         List<String> theory = new ArrayList<String>();
         List<String> lab = new ArrayList<String>();
@@ -414,7 +415,7 @@ public class Main {
         }
 
         System.out.println("\n\nYour available schedules are-");
-        System.out.printf("%5s |","No.");
+        System.out.printf("%5s|","No.");
         for(int  i =  0;  i < theoryCourseCount; i++){
             //System.out.print(treenodes[i].name+" ");
             System.out.printf("%20s ", treenodes[i].name);
