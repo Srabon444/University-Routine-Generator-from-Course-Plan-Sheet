@@ -232,7 +232,7 @@ public class Main {
         finalCombs.removeAll(remove);
         //System.out.println(finalCombs);
         remove.clear();
-        int count = 1;
+        int count = 1,flag=0;
         for(List<String> f:finalCombs){
             String[] combination1 = f.toArray(new String[f.size()]);
             Set<Character> dayCounter = new HashSet<>();
@@ -292,13 +292,18 @@ public class Main {
             }
             collect.add(s);
         }
-        for(List<String> f :collect){
-            System.out.printf("%5s|",count++);
-            for(String s:f){
-                System.out.printf("%20s===",s);
+        if(collect.size() == 0){
+            System.out.println("No  routine available for "+totalDayCount+" days");
+        }else{
+            for(List<String> f :collect){
+                System.out.printf("%5s|",count++);
+                for(String s:f){
+                    System.out.printf("%20s===",s);
+                }
+                System.out.println();
             }
-            System.out.println();
         }
+
         /*for(List<String> f :finalCombs){
             System.out.println(count++ + f.toString());
         }*/
