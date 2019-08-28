@@ -69,7 +69,7 @@ public interface ExternalSheet
 
   /**
    * Parsing of formulas is only supported for a subset of the available
-   * biff version, so we need to Test to see if this version is acceptable
+   * biff version, so we need to Main to see if this version is acceptable
    *
    * @return the BOF record
    */

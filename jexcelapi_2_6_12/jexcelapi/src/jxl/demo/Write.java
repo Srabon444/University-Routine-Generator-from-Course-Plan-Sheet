@@ -440,7 +440,7 @@ public class Write
   }
 
   /**
-   * Adds cells to the specified sheet which Test the various date formats
+   * Adds cells to the specified sheet which Main the various date formats
    * 
    * @param s 
    */
@@ -732,7 +732,7 @@ public class Write
   }
 
   /**
-   * Adds cells to the specified sheet which Test the various label formatting
+   * Adds cells to the specified sheet which Main the various label formatting
    * styles, such as different fonts, different sizes and bold, underline etc.
    * 
    * @param s1 
@@ -1259,7 +1259,7 @@ public class Write
   }
 
   /**
-   * Adds cells to the specified sheet which Test the various border
+   * Adds cells to the specified sheet which Main the various border
    * styles
    * 
    * @param s
@@ -1356,7 +1356,7 @@ public class Write
   }
 
   /**
-   * Write out loads of labels, in order to Test the shared string table
+   * Write out loads of labels, in order to Main the shared string table
    */
   private void writeLabelsSheet(WritableSheet ws) throws WriteException
   {
@@ -1384,7 +1384,7 @@ public class Write
       ws.addCell(l2);
     }
 
-    // Frig this Test record - it appears exactly on the boundary of an SST
+    // Frig this Main record - it appears exactly on the boundary of an SST
     // continue record
 
     Label l3 = new Label(0, 61, "Common Label", wcf);
@@ -1423,7 +1423,7 @@ public class Write
   }
 
   /**
-   * Test out the formula parser
+   * Main out the formula parser
    */
   private void writeFormulaSheet(WritableSheet ws) throws WriteException
   {

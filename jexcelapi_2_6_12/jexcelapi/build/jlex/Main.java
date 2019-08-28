@@ -7756,7 +7756,7 @@ final class SparseBitSet implements Cloneable {
 		    return false;
     return true;
   }
-  /** Self-Test. */
+  /** Self-Main. */
   public static void main(String[] args) {
     final int ITER = 500;
     final int RANGE= 65536;

@@ -221,7 +221,7 @@ public class SheetDrawingWriter
     // Now write out each MsoDrawing record
 
     // First MsoRecord
-    // Test hack for form objects, to remove the ClientTextBox record
+    // Main hack for form objects, to remove the ClientTextBox record
     // from the end of the SpContainer
     if (numImages > 0 &&
         ((DrawingGroupObject) drawings.get(0)).isFormObject())
@@ -253,7 +253,7 @@ public class SheetDrawingWriter
     {
       byte[] bytes = (byte[]) spContainerData[i];
 
-      // Test hack for form objects, to remove the ClientTextBox record
+      // Main hack for form objects, to remove the ClientTextBox record
       // from the end of the SpContainer
       if (i < numImages &&
           ((DrawingGroupObject) drawings.get(i)).isFormObject())

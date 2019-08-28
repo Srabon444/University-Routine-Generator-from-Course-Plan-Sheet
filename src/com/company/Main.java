@@ -14,6 +14,10 @@ public class Main {
     private static int theoryCourseCount;
     private static int labCourseCount;
     private static Treenode root;
+
+    private static int c = 0;
+    private static String[] uniqueNodes;
+
     private static class Treenode {
 
         private List<String> times;
@@ -33,7 +37,21 @@ public class Main {
     }
 
     public static boolean isBetween(LocalTime candidate, LocalTime start, LocalTime end) {
-        return !candidate.isBefore(start) && !candidate.isAfter(end);  // Inclusive.
+        String can = candidate.toString();
+        String str = start.toString();
+        String en = end.toString();
+        //System.out.println(can+str+en);
+        if(candidate.isAfter(start) && candidate.isBefore(end)){
+            return true;
+        }else if(can.equals(str) || can.equals(en)){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean arrayCheck(String[] arr, String targetValue) {
+        Set<String> set = new HashSet<String>(Arrays.asList(arr));
+        return set.contains(targetValue);
     }
 
     public void read(){
@@ -77,29 +95,26 @@ public class Main {
     }
 
 
-    public static <T> Set<List<T>> getCombinations(List<List<T>> lists) {
-        Set<List<T>> combinations = new HashSet<List<T>>();
-        Set<List<T>> newCombinations;
-
-
+    public static <T> Set<Set<T>> getCombinations(List<List<T>> lists) {
+        Set<Set<T>> combinations = new HashSet<Set<T>>();
+        Set<Set<T>> newCombinations;
 
         int index = 0;
 
         // extract each of the integers in the first list
         // and add each to ints as a new list
         for(T i: lists.get(0)) {
-            List<T> newList = new ArrayList<T>();
+            Set<T> newList = new HashSet<T>();
             newList.add(i);
             combinations.add(newList);
         }
         index++;
         while(index < lists.size()) {
             List<T> nextList = lists.get(index);
-            newCombinations = new HashSet<List<T>>();
-            for(List<T> first: combinations) {
+            newCombinations = new HashSet<Set<T>>();
+            for(Set<T> first: combinations) {
                 for(T second: nextList) {
-                    List<T> newList = new ArrayList<T>();
-                    newList.addAll(first);
+                    Set<T> newList = new HashSet<T>(first);
                     newList.add(second);
                     newCombinations.add(newList);
                 }
@@ -115,56 +130,61 @@ public class Main {
     //Generate Combinations
     private static void generateCombinations(Treenode[] treenodes, int totalDayCount) {
         List<List<String>> AllCourseTimelists = new ArrayList<List<String>>();
-        for (int i = 0; i < theoryCourseCount; i++) {
+        for (int i = 0; i < labCourseCount + theoryCourseCount; i++) {
             //System.out.println("Size "+treenodes[i].times.size());
             AllCourseTimelists.add(treenodes[i].times);
         }
 
-        Set<List<String>> combs = getCombinations(AllCourseTimelists);
+        Set<Set<String>> combs = new HashSet<Set<String>>();
+        combs = getCombinations(AllCourseTimelists);
         /*combs contains only theory combination*/
-        //System.out.println("Available Routine "+combs.size());
-        List<Set<String>> finalCombs = new ArrayList<Set<String>>();
-        for(List<String> c: combs){
-            Set<String> s = new HashSet<>();
-            String[] array = c.toArray(new String[c.size()]);
-
-            for (int i = 0; i < array.length; i++) {
-                s.add(array[i]);
+        //Iterator<Set<String>> itr = combs.iterator();
+        /*while (itr.hasNext()){
+            Set<String> c = itr.next();
+            if(itr.next().size() < theoryCourseCount){
+                combs.remove(c);
             }
-            if(s.size() == theoryCourseCount){
-                finalCombs.add(s);
-            }
-        }
+        }*/
+        combs.removeIf(c -> c.size() < theoryCourseCount + labCourseCount);
 
+        Set<List<String>> finalCombs = new HashSet<List<String>>();
+        for (Set<String> c : combs) {
+            Set<String> finalC = new HashSet<String>();
+            String[] tempCarr = c.toArray(new String[0]);
+            //Set<String> tempC = c;
+            String[] fc = new String[theoryCourseCount + labCourseCount];
+            for (int i = 0; i < treenodes.length; i++) {
+                for (int j = 0; j < tempCarr.length; j++) {
+                    //System.out.println("str"+s+" "+treenodes[i].times);
+                    if (!tempCarr[j].equals("*")) {
+                        String s = tempCarr[j];
+                        if (treenodes[i].times.contains(s)) {
+                            fc[i] = s;
+                            tempCarr[j] = "*";
+                            break;
+                        }
+                    }
 
-        int count = 1;
-        if(labCourseCount == 0){
-            for (Set<String> c : finalCombs) {
-                System.out.printf("%-5s |",count++);
-                for(String o : c){
-                    System.out.format("%-20s |", o);
                 }
-                System.out.println();
             }
-            return;
+            finalCombs.add(Arrays.asList(fc));
         }
-        //System.out.println("jk");
-        for (Set<String> c : finalCombs) {
-            for (int j = theoryCourseCount; j < theoryCourseCount + labCourseCount; j++) {
-                List<String> testTimes = new ArrayList<String>();
-                testTimes = treenodes[j].times;
+        Set<List<String>> remove = new HashSet<List<String>>();
+        //System.out.println(finalCombs);
+        for (List<String> f : finalCombs) {
+            for (int j = theoryCourseCount; j < labCourseCount + theoryCourseCount; j++) {
+                String[] combination = f.toArray(new String[f.size()]);
+                int ok = 0;
 
-                for (String labTime : testTimes) {
-                    String[] combination = c.toArray(new String[c.size()]);
-                    int ok = 0;
-
-
-                    for (int i = 0; i < combination.length; i++) {
-                        String dc = "";
-
+                String labTime = f.get(j);
+                for (int i = 0; i < theoryCourseCount; i++) {
+                    String dc = "";
+                    if(combination[i] == null || labTime == null){
+                        remove.add(f);
+                        break;
+                    }else{
                         dc += combination[i].charAt(0);
                         dc += combination[i].charAt(1);
-
                         String labDay = String.valueOf(labTime.charAt(0));
 
                         if (dc.contains(labDay)) {
@@ -177,9 +197,17 @@ public class Main {
                             String[] timeParserCourse = courseTime.split(" - ");
 
                             LocalTime time = LocalTime.parse(timeParserLab[0].substring(0, 5));
-                            if (isBetween(time, LocalTime.parse(timeParserCourse[0].substring(0, 5)), LocalTime.parse(timeParserCourse[1].substring(0, 5)))) {
+                            LocalTime time1 = LocalTime.parse(timeParserLab[1].substring(0, 5));
+                            LocalTime start = LocalTime.parse(timeParserCourse[0].substring(0, 5));
+                            LocalTime end = LocalTime.parse(timeParserCourse[1].substring(0, 5));
+
+                            //System.out.println(time + " " +time1);
+                            //System.out.println(labTime + " " + combination[i] + "day and time");
+                            //System.out.println(time+ " "+time1+" "+start+" "+end);
+                            if (isBetween(time, start, end) || isBetween(time1, start, end))
+                            {
                                 //timeConf = true;
-                                //System.out.println(labTime + " " + combination[i] + "day and time");
+                                //System.out.println("Conf");
                             } else {
                                 ok++;
                             }
@@ -187,67 +215,100 @@ public class Main {
                         } else {
                             ok++;
                         }
-                    }
-
-                    if (ok == theoryCourseCount) {
-
-                            //System.out.println(list.toString());
-                        String[] combination1 = c.toArray(new String[c.size()]);
-                        Set<Character> dayCounter = new HashSet<>();
-                        for(int i = 0; i < combination1.length; i++){
-                            dayCounter.add(combination1[i].charAt(0));
-                            dayCounter.add(combination1[i].charAt(1));
-                        }
-                        dayCounter.add(labTime.charAt(0));
-                        if(dayCounter.size() == totalDayCount){
-                            System.out.printf("%-5s |",count++);
-                            for(String course:c){
-                                System.out.format("%-20s |", course);
-                            }
-                            System.out.printf("%-20s |",labTime);
-                        }
-                        System.out.println();
-
 
                     }
+
+
+
                 }
-                /*if(count == 1){
-                    System.out.println("No routine available for "+totalDayCount+" days.");
-                }*/
+                if(ok != theoryCourseCount){
+                    remove.add(f);
+                    break;
+                }
             }
-        }
-        if(count == 1){
-            System.out.println("No routine available for "+totalDayCount+" days.");
-        }
 
 
-        /*int count = 1;
-        for(List<String> list : combs) {
-            //System.out.println(list.toString());
-            String[] combination = list.toArray(new String[list.size()]);
+        }
+        finalCombs.removeAll(remove);
+        //System.out.println(finalCombs);
+        remove.clear();
+        int count = 1;
+        for(List<String> f:finalCombs){
+            String[] combination1 = f.toArray(new String[f.size()]);
             Set<Character> dayCounter = new HashSet<>();
-            for(int i = 0; i < combination.length; i++){
-                dayCounter.add(combination[i].charAt(0));
-                dayCounter.add(combination[i].charAt(1));
+            for(int i = 0; i < theoryCourseCount; i++){
+                if(combination1[i] == null){
+                    remove.add(f);
+                }else{
+                    dayCounter.add(combination1[i].charAt(0));
+                    dayCounter.add(combination1[i].charAt(1));
+                }
+
             }
-            if(dayCounter.size() == totalDayCount){
-                System.out.println(count++ + ". " +list.toString());
+            for(int i = theoryCourseCount; i < theoryCourseCount+labCourseCount; i++){
+                if(combination1[i] == null){
+                    remove.add(f);
+                }else{
+                    dayCounter.add(combination1[i].charAt(0));
+                }
             }
+
+            if(dayCounter.size() != totalDayCount){
+                remove.add(f);
+            }
+            //System.out.println(count++ + f.toString());
         }
-        if(count == 1){
-            System.out.println("No routine available for "+totalDayCount+" days.");
+        finalCombs.removeAll(remove);
+        remove.clear();
+        int sizeBefore = finalCombs.size();
+        List<List<String>> collect = new ArrayList<List<String>>();
+        for(List<String> f:finalCombs){
+            List<String> s = new ArrayList<String>();
+            //System.out.println(count++ + f.toString());
+            for(int in = 0; in < f.size(); in++){
+                String name = treenodes[in].name;
+                String section = "";
+                for(int i = 0; i < c; i++){
+                    //System.out.println(uniqueNodes[i]);
+
+                    String[] parseString = uniqueNodes[i].split(";");
+
+                    //System.out.println(parseString[3]);
+
+
+                    if(name.equals(parseString[0])){
+                        if(f.contains(parseString[3])){
+                            if(section.equals("")){
+                                section+=parseString[1];
+                            }else {
+                                section += ","+parseString[1];
+                            }
+
+                        }
+                    }
+
+                }
+                s.add(section);
+            }
+            collect.add(s);
+        }
+        for(List<String> f :collect){
+            System.out.printf("%5s===",count++);
+            for(String s:f){
+                System.out.printf("%20s===",s);
+            }
+            System.out.println();
+        }
+        /*for(List<String> f :finalCombs){
+            System.out.println(count++ + f.toString());
         }*/
-
-
-
     }
 
     public static void main(String[] args) throws Exception {
-        Main test = new Main();
-        test.setInputFile("preadvise.xls");
-        test.read();
+        Main main = new Main();
+        main.setInputFile("preadvise.xls");
+        main.read();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your Student ID-");
         String id = scanner.nextLine();
         List<String> theory = new ArrayList<String>();
         List<String> lab = new ArrayList<String>();
@@ -276,9 +337,9 @@ public class Main {
 
 
 
-        //Main test = new Main();
-        test.setInputFile("nsu subjects.xls");
-        test.read();
+        //Main main = new Main();
+        main.setInputFile("nsu subjects.xls");
+        main.read();
 
         //Scanner scanner = new Scanner(System.in);
 
@@ -300,8 +361,8 @@ public class Main {
             }
             treenodes[i].times = new ArrayList<String>();
         }
-       // System.out.println("How many lab courses you have taken?");
-       // int labCourseCount = scanner.nextInt();
+        // System.out.println("How many lab courses you have taken?");
+        // int labCourseCount = scanner.nextInt();
 
         //System.out.println("Enter the Lab course code for your taken courses: ");
         //Set nodes based on taken courses
@@ -320,8 +381,8 @@ public class Main {
         int totalDayCount = scanner.nextInt();
 
 
-        String[] uniqueNodes = new String[1500];
-        int c = 0;
+        uniqueNodes = new String[1500];
+
 
         //Fetch taken course relatred info
         for(int i = 0; rowsData[i] != null; i++){
@@ -358,6 +419,7 @@ public class Main {
             //System.out.print(treenodes[i].name+" ");
             System.out.printf("%20s ", treenodes[i].name);
         }
+
         for(int  i =  theoryCourseCount;  i < labCourseCount+theoryCourseCount; i++){
             //System.out.print(treenodes[i].name+" ");
             System.out.printf("%30s ", treenodes[i].name);
@@ -366,9 +428,9 @@ public class Main {
 
         generateCombinations(treenodes, totalDayCount);
 
-        /*//System.out.println(treenodes[0].name + "\n" + treenodes[0].times);
-        for(int  i =  0;  i < treenodes.length; i++){
-            System.out.println(treenodes[i].name);
+        //System.out.println(treenodes[0].name + "\n" + treenodes[0].times);
+        /*for(int  i =  0;  i < treenodes.length; i++){
+            System.out.println(treenodes[i].times);
         }*/
 
 

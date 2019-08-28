@@ -121,7 +121,7 @@ public class ReadWrite
   }
 
   /**
-   * If the inputFile was the Test spreadsheet, then it modifies certain fields
+   * If the inputFile was the Main spreadsheet, then it modifies certain fields
    * of the writable copy
    * 
    * @param w 

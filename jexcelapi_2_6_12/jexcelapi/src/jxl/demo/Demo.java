@@ -297,11 +297,11 @@ public class Demo
   }
 
   /**
-   * A private method to Test the various find functions
+   * A private method to Main the various find functions
    */
   private static void findTest(Workbook w)
   {
-    logger.info("Find Test");
+    logger.info("Find Main");
 
     Cell c = w.findCellByName("named1");
     if (c != null)
